@@ -247,6 +247,46 @@ function listEvents(calendarId) {
   });
 }
 
+function fetchGitlabData(gitLabPersonalToken) {
+  console.log("fetchGitlabData");
+  let fetch_options = {
+    method: "GET",
+    headers: {
+      Authorization: `PRIVATE-TOKEN ${gitLabPersonalToken}`,
+      "Content-Type": "application/json"
+    },
+  };
+  fetch(
+    "https://gitlab.qiwa.tech/api/v4/merge_requests?scope=assigned_to_me",
+    fetch_options
+  )
+    .then(async (response) => {
+      const isJson = response.headers
+        .get("content-type")
+        ?.includes("application/json");
+      const data = isJson ? await response.json() : null;
+
+      // check for error response
+      if (!response.ok) {
+        // get error message from body or default to response status
+        const error = (data && data.message) || response.status;
+        return Promise.reject(error);
+      }
+
+      console.log(data);
+      if (data) {
+        var review_requested_objects = data.filter(
+          (element) =>
+            element.reason == "review_requested" || element.reason == "mention"
+        );
+        console.log(review_requested_objects);
+      }
+    })
+    .catch((error) => {
+      console.error("There was an error!", error);
+    });
+}
+
 function fetchGithubData(githubPersonalToken, since) {
   let fetch_options = {
     method: "GET",
@@ -288,14 +328,10 @@ function fetchGithubData(githubPersonalToken, since) {
     });
 }
 
-function handleErrors(response) {
-  console.log(response.body);
-  if (!response.ok) throw new Error(response.body);
-  return response.json();
-}
+
 
 document.addEventListener("DOMContentLoaded", function () {
-  const githubPersonalToken = "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";
+  const githubPersonalToken = "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";
   let currentDate = new Date();
 
   let twoWeeksAgoDate = new Date(
@@ -303,7 +339,10 @@ document.addEventListener("DOMContentLoaded", function () {
     currentDate.getMonth(),
     currentDate.getDate() - 14
   );
-  console.log(ISODateString(twoWeeksAgoDate));
-  // getCalendarId();
-  fetchGithubData(githubPersonalToken, ISODateString(twoWeeksAgoDate));
+  // console.log(ISODateString(twoWeeksAgoDate));
+  // // getCalendarId();
+  fetchGithubData(githubPersonalToken);
+
+  const gitLabPersonalToken = "3RNrdp7-bDeEV61QRDvv";
+  fetchGitlabData(gitLabPersonalToken);
 });
