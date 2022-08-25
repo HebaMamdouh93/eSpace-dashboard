@@ -286,6 +286,8 @@ function fetchGitlabData(gitLabPersonalToken) {
       }
 
       console.log(data);
+      // sync chrome storage
+      chrome.storage.sync.set({ gitlab_token: gitLabPersonalToken });
       if (data) {
       }
     })
@@ -328,6 +330,8 @@ function fetchGithubData(githubPersonalToken) {
             element.reason == "review_requested" || element.reason == "mention"
         );
         console.log(review_requested_objects);
+        // Set Browser Storage
+        chrome.storage.sync.set({ github_token: githubPersonalToken });
       }
     })
     .catch((error) => {
@@ -337,6 +341,19 @@ function fetchGithubData(githubPersonalToken) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  let currentDate = new Date();
+
+  let twoWeeksAgoDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate() - 14
+  );
+
+  // Get chrome storages
+  chrome.storage.sync.get("github_token", ({ github_token }) => {
+    console.log("github token from storage: ", github_token);
+  });
+
   getCalendarId();
 });
 
@@ -373,5 +390,3 @@ gitLabSubmit.addEventListener("click", function () {
   console.log("submit gitlab token: ", gitLabToken);
   fetchGitlabData(gitLabToken);
 });
-
-
