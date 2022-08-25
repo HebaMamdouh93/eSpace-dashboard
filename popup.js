@@ -329,17 +329,33 @@ function fetchGithubData(githubPersonalToken) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const githubPersonalToken = "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";
 
-  // console.log(ISODateString(twoWeeksAgoDate));
+  let currentDate = new Date();
+
+  let twoWeeksAgoDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate() - 14
+  );
   // getCalendarId();
-  fetchGithubData(githubPersonalToken);
-
-  const gitLabPersonalToken = "3RNrdp7-bDeEV61QRDvv";
-  fetchGitlabData(gitLabPersonalToken);
 });
-let googleCalendar = document.getElementById("google-calendar");
 
-googleCalendar.addEventListener("click", function () {
-  getCalendarId();
+// Get Github submit input and button
+let gitHubInput = document.getElementById("github-input");
+let gitHubSubmit = document.getElementById("github-submit");
+
+gitHubSubmit.addEventListener("click", function(){
+  gitHubToken = gitHubInput.value
+  console.log("submit github token: ", gitHubToken);
+  fetchGithubData(gitHubToken);
+});
+
+// Get Gitlab submit input and button
+let gitLabInput = document.getElementById("gitlab-input");
+let gitLabSubmit = document.getElementById("gitlab-submit");
+ 
+gitLabSubmit.addEventListener("click", function(){
+  gitLabToken = gitLabInput.value
+  console.log("submit gitlab token: ", gitLabToken);
+  fetchGitlabData(gitLabToken);
 });
