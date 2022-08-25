@@ -1,0 +1,39 @@
+{
+  "name": "eSpace dashboard",
+  "description": "Build eSpace dashboard Extension!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "identity",
+    "identity.email"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "/images/get_started128.png"
+    }
+  },
+  "oauth2": {
+    "client_id": "155844829382-m0k2t7gtspe939u700qrd0568b982nka.apps.googleusercontent.com",
+    "scopes": [
+      "profile email",
+      "https://www.googleapis.com/auth/calendar",
+      "https://www.googleapis.com/auth/calendar.readonly"
+    ]
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline'"
+  },
+  "icons": {
+    "16": "/images/espace16.png",
+    "32": "/images/espace32.png",
+    "48": "/images/espace48.png",
+    "128": "/images/espace128.png"
+  }
+}
