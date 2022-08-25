@@ -252,7 +252,7 @@ function fetchGitlabData(gitLabPersonalToken) {
   let fetch_options = {
     method: "GET",
     headers: {
-      Authorization: `PRIVATE-TOKEN ${gitLabPersonalToken}`,
+      "PRIVATE-TOKEN": gitLabPersonalToken,
       "Content-Type": "application/json"
     },
   };
@@ -275,11 +275,7 @@ function fetchGitlabData(gitLabPersonalToken) {
 
       console.log(data);
       if (data) {
-        var review_requested_objects = data.filter(
-          (element) =>
-            element.reason == "review_requested" || element.reason == "mention"
-        );
-        console.log(review_requested_objects);
+       
       }
     })
     .catch((error) => {
@@ -287,7 +283,8 @@ function fetchGitlabData(gitLabPersonalToken) {
     });
 }
 
-function fetchGithubData(githubPersonalToken, since) {
+function fetchGithubData(githubPersonalToken) {
+  console.log(githubPersonalToken);
   let fetch_options = {
     method: "GET",
     headers: {
@@ -331,16 +328,10 @@ function fetchGithubData(githubPersonalToken, since) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  const githubPersonalToken = "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";
-  let currentDate = new Date();
-
-  let twoWeeksAgoDate = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    currentDate.getDate() - 14
-  );
+  const githubPersonalToken = "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";
+ 
   // console.log(ISODateString(twoWeeksAgoDate));
-  // // getCalendarId();
+  getCalendarId();
   fetchGithubData(githubPersonalToken);
 
   const gitLabPersonalToken = "3RNrdp7-bDeEV61QRDvv";
