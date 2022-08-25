@@ -37,9 +37,13 @@ function createMeeting() {
 }
 
 function getCalendarId() {
+  chrome.storage.sync.get("googleToken", ({ googleToken }) => {
+    console.log(googleToken);
+  });
   chrome.identity.getAuthToken({ interactive: true }, function (token) {
     console.log(token);
-
+    chrome.storage.sync.set({ googleToken: token });
+    
     let fetch_options = {
       method: "GET",
       headers: {
@@ -253,7 +257,7 @@ function fetchGitlabData(gitLabPersonalToken) {
     method: "GET",
     headers: {
       "PRIVATE-TOKEN": gitLabPersonalToken,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
   };
   fetch(
@@ -275,7 +279,6 @@ function fetchGitlabData(gitLabPersonalToken) {
 
       console.log(data);
       if (data) {
-       
       }
     })
     .catch((error) => {
@@ -325,15 +328,18 @@ function fetchGithubData(githubPersonalToken) {
     });
 }
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
   const githubPersonalToken = "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";
- 
+
   // console.log(ISODateString(twoWeeksAgoDate));
-  getCalendarId();
+  // getCalendarId();
   fetchGithubData(githubPersonalToken);
 
   const gitLabPersonalToken = "3RNrdp7-bDeEV61QRDvv";
   fetchGitlabData(gitLabPersonalToken);
+});
+let googleCalendar = document.getElementById("google-calendar");
+
+googleCalendar.addEventListener("click", function () {
+  getCalendarId();
 });
