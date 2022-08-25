@@ -341,6 +341,20 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Get Github submit input and button
+let githubIcon = $("#github")
+githubIcon.on("click", function(){
+  
+});
+let gitlabIcon = $("#gitlab")
+gitlabIcon.on("click", function(){
+
+});
+let googleIcon = $("#google")
+googleIcon.on("click", function(){
+
+});
+
+
 let gitHubInput = document.getElementById("github-input");
 let gitHubSubmit = document.getElementById("github-submit");
 
