@@ -1,5 +1,3 @@
-
-
 function createMeeting() {
   chrome.identity.getAuthToken({ interactive: true }, function (token) {
     console.log(token);
@@ -129,13 +127,15 @@ function dayString(num) {
 //--------------------- Add a 0 to numbers
 function padNum(num) {
   if (num <= 9) {
-      return "0" + num;
+    return "0" + num;
   }
   return num;
 }
 
 function AmPm(num) {
-  if (num <= 12) { return "am " + num; }
+  if (num <= 12) {
+    return "am " + num;
+  }
   return "pm " + padNum(num - 12);
 }
 
@@ -213,7 +213,7 @@ function listEvents(calendarId) {
               startYear,
               '</font><font size="5" face="courier"> @ ',
               item.summary,
-              
+
               "</font><br><br>",
             ];
           } else {
@@ -247,18 +247,63 @@ function listEvents(calendarId) {
   });
 }
 
-async function fetchData() {
-  const res=await fetch ("https://api.coronavirus.data.gov.uk/v1/data");
-  const record=await res.json();
-  document.getElementById("date").innerHTML=record.data[0].date;
-  document.getElementById("areaName").innerHTML=record.data[0].areaName;
-  document.getElementById("latestBy").innerHTML=record.data[0].latestBy;
-  document.getElementById("deathNew").innerHTML=record.data[0].deathNew;
+function fetchGithubData(githubPersonalToken, since) {
+  let fetch_options = {
+    method: "GET",
+    headers: {
+      Authorization: `token ${githubPersonalToken}`,
+      "Content-Type": "application/json",
+      Accept: "application/vnd.github+json",
+    },
+  };
+  fetch(
+    "https://api.github.com/notifications?participating=true",
+    fetch_options
+  )
+    .then(async (response) => {
+      const isJson = response.headers
+        .get("content-type")
+        ?.includes("application/json");
+      const data = isJson ? await response.json() : null;
+
+      // check for error response
+      if (!response.ok) {
+        // get error message from body or default to response status
+        const error = (data && data.message) || response.status;
+        return Promise.reject(error);
+      }
+
+      console.log(data);
+      if (data) {
+        var review_requested_objects = data.filter(
+          (element) =>
+            element.reason == "review_requested" || element.reason == "mention"
+        );
+        console.log(review_requested_objects);
+      }
+    })
+    .catch((error) => {
+      // element.parentElement.innerHTML = `Error: ${error}`;
+      console.error("There was an error!", error);
+    });
 }
 
+function handleErrors(response) {
+  console.log(response.body);
+  if (!response.ok) throw new Error(response.body);
+  return response.json();
+}
 
+document.addEventListener("DOMContentLoaded", function () {
+  const githubPersonalToken = "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";
+  let currentDate = new Date();
 
-document.addEventListener('DOMContentLoaded', function () {
-  getCalendarId();
-  fetchData();
+  let twoWeeksAgoDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate() - 14
+  );
+  console.log(ISODateString(twoWeeksAgoDate));
+  // getCalendarId();
+  fetchGithubData(githubPersonalToken, ISODateString(twoWeeksAgoDate));
 });
