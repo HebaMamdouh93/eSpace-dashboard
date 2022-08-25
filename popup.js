@@ -40,13 +40,15 @@ function getCalendarId() {
   chrome.storage.sync.get("googleToken", ({ googleToken }) => {
     console.log(googleToken);
     if (googleToken) {
-      $("#google-card").hide();
+      $("#google-done").addClass('d-none');
       fetchEvents(googleToken);
       
     } else {
       chrome.identity.getAuthToken({ interactive: true }, function (token) {
         console.log(token);
         chrome.storage.sync.set({ googleToken: token });
+        $("#google-done").addClass('d-none');
+
         fetchEvents(token);
       });
     }
@@ -191,74 +193,25 @@ function listEvents(calendarId, token) {
           document.getElementById("content").innerText = "No events found.";
           return;
         }
-        // Flatten to string to display
-        // const output = events.reduce(
-        //   (str, event) => `${str}${event.summary} (${event.start.dateTime || event.start.date})\n`,
-        //   'Events:\n');
-        // document.getElementById('content').innerText = output;
+        $("#google-done").removeClass('d-none');
+        removeByClassName("google");
 
-        for (var i = 0; i < events.length; i++) {
-          var li = document.createElement("li");
-          var item = events[i];
-          var classes = [];
-          var allDay = item.start.date ? true : false;
-          var startDT = allDay ? item.start.date : item.start.dateTime;
-          var dateTime = startDT.split("T"); //split date from time
-          var date = dateTime[0].split("-"); //split yyyy mm dd
-          var startYear = date[0];
-          var startMonth = monthString(date[1]);
-          var startDay = date[2];
-          var startDateISO = new Date(
-            startMonth + " " + startDay + ", " + startYear + " 00:00:00"
-          );
-          var startDayWeek = dayString(startDateISO.getDay());
-          if (allDay == true) {
-            //change this to match your needs
-            var str = [
-              '<font size="4" face="courier">',
-              startDayWeek,
-              " ",
-              startMonth,
-              " ",
-              startDay,
-              " ",
-              startYear,
-              '</font><font size="5" face="courier"> @ ',
-              item.summary,
-
-              "</font><br><br>",
-            ];
-          } else {
-            var time = dateTime[1].split(":"); //split hh ss etc...
-            var startHour = AmPm(time[0]);
-            var startMin = time[1];
-            var str = [
-              //change this to match your needs
-              '<font size="4" face="courier">',
-              startDayWeek,
-              " ",
-              startMonth,
-              " ",
-              startDay,
-              " ",
-              startYear,
-              " - ",
-              startHour,
-              ":",
-              startMin,
-              '</font><font size="5" face="courier"> @ ',
-              item.summary,
-              "</font><br><br>",
-            ];
-          }
-          li.innerHTML = str.join("");
-          li.setAttribute("class", classes.join(" "));
-          document.getElementById("events").appendChild(li);
-        }
+        events.forEach((element) => {
+          appendNotifications(element.summary, element.htmlLink, "google")
+        })
       });
 
 }
-
+function removeByClassName(class_name) {
+  $(`.${class_name}`).remove();
+}
+function appendNotifications(title, url, class_name="test"){
+  $("table").removeClass("d-none");
+  let  body = `<tr class=${class_name}>
+              <td><a href=${url}><h3>${title}</h3></td>
+              </tr>`;
+  $("#notifications").append(body)
+}
 function fetchGitlabData(gitLabPersonalToken) {
   console.log("fetchGitlabData");
   let fetch_options = {
@@ -286,9 +239,16 @@ function fetchGitlabData(gitLabPersonalToken) {
       }
 
       console.log(data);
+      $("#gitlab-input").addClass('d-none');
+      $("#gitlab-done").removeClass('d-none');
       // sync chrome storage
       chrome.storage.sync.set({ gitlab_token: gitLabPersonalToken });
+      removeByClassName("gitlab");
+
       if (data) {
+        data.forEach((element) => {
+          appendNotifications(element.title, element.web_url, "gitlab")
+        })
       }
     })
     .catch((error) => {
@@ -329,8 +289,14 @@ function fetchGithubData(githubPersonalToken) {
           (element) =>
             element.reason == "review_requested" || element.reason == "mention"
         );
+        $("#github-input").addClass('d-none');
+        $("#github-done").removeClass('d-none');
         console.log(review_requested_objects);
+        removeByClassName("github");
         // Set Browser Storage
+        review_requested_objects.forEach((element) => {
+          appendNotifications(element.subject.title, element.url, "github")
+        })
         chrome.storage.sync.set({ github_token: githubPersonalToken });
       }
     })
@@ -357,36 +323,55 @@ document.addEventListener("DOMContentLoaded", function () {
   getCalendarId();
 });
 
-// Get Github submit input and button
-let githubIcon = $("#github")
-githubIcon.on("click", function(){
-  
-});
-let gitlabIcon = $("#gitlab")
-gitlabIcon.on("click", function(){
-
-});
-let googleIcon = $("#google")
-googleIcon.on("click", function(){
-
-});
-
-
 let gitHubInput = document.getElementById("github-input");
 let gitHubSubmit = document.getElementById("github-submit");
 
-gitHubSubmit.addEventListener("click", function () {
-  gitHubToken = gitHubInput.value;
+// Get Github submit input and button
+let githubIcon = $("#github")
+githubIcon.on("click", function(){
+  chrome.storage.sync.get("github_token", ({ github_token }) => {
+    if(github_token){
+      $("#github-input").addClass('d-none');
+      $("#github-done").removeClass('d-none');
+
+    }else{
+      $("#github-input").removeClass('d-none');
+      $("#github-done").addClass('d-none');
+    }
+    fetchGithubData(github_token);
+  });
+});
+let gitlabIcon = $("#gitlab")
+
+gitlabIcon.on("click", function(){
+  chrome.storage.sync.get("gitlab_token", ({ gitlab_token }) => {
+    if(gitlab_token){
+      $("#gitlab-input").addClass('d-none');
+      $("#gitlab-done").removeClass('d-none');
+
+    }else{
+      $("#gitlab-input").removeClass('d-none');
+      $("#gitlab-done").addClass('d-none');
+    }
+    fetchGitlabData(gitlab_token);
+  });
+});
+
+$("#google").on("click", function(){
+  getCalendarId();
+});
+
+
+$("#github-input").keyup(function () {
+  gitHubToken = $(this).val();
   console.log("submit github token: ", gitHubToken);
   fetchGithubData(gitHubToken);
 });
 
-// Get Gitlab submit input and button
-let gitLabInput = document.getElementById("gitlab-input");
-let gitLabSubmit = document.getElementById("gitlab-submit");
-
-gitLabSubmit.addEventListener("click", function () {
-  gitLabToken = gitLabInput.value;
+$("#gitlab-input").keyup(function () {
+  gitLabToken = $(this).val();
   console.log("submit gitlab token: ", gitLabToken);
   fetchGitlabData(gitLabToken);
 });
+
+

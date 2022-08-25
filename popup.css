@@ -64,6 +64,9 @@ td{
   width: 50%;
   padding: 10px;
 }
+tr{
+  height: 20px;
+}
 
 .buttons{
   text-align:center;
@@ -82,6 +85,9 @@ td{
 }
 .github{
   background-color: #24292f;
+}
+.google{
+  background-color: #e44f36;
 }
 .inputs{
   display: block;

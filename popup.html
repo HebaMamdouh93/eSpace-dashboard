@@ -30,7 +30,7 @@
                     id="github"
 					class="github-button"
 				/>
-				<img src="./images/done.png" class="done d-none" />
+				<img id="github-done" src="./images/done.png" class="done d-none" />
 			</div>
 			<div class="position-relative">
 				<input
@@ -40,7 +40,7 @@
                     id="gitlab"
 					class="github-button"
 				/>
-				<img src="./images/done.png" class="done d-none" />
+				<img id="gitlab-done" src="./images/done.png" class="done d-none" />
 			</div>
 			<div class="position-relative">
 				<input
@@ -50,23 +50,14 @@
                     id="google"
 					class="github-button"
 				/>
-				<img src="./images/done.png" class="done d-none" />
+				<img id="google-done" src="./images/done.png" class="done d-none" />
 			</div>
 		</div>
 		<input id="github-input" class="inputs github-at github d-none" type="text" /><br />
 		<input id="gitlab-input" class="inputs gitlab-at gitlab d-none" type="text" />
 
 		<table class="d-none">
-			<tbody >
-				<tr>
-					<td><h3>Google:</h3></td>
-				</tr>
-				<tr>
-					<td><h3>Gitlab:</h3></td>
-				</tr>
-				<tr>
-					<td><h3>Github:</h3></td>
-				</tr>
+			<tbody id="notifications">
 			</tbody>
 		</table>
 		<script src="popup.js"></script>
