@@ -37,28 +37,41 @@ function createMeeting() {
 }
 
 function getCalendarId() {
-  chrome.identity.getAuthToken({ interactive: true }, function (token) {
-    console.log(token);
-
-    let fetch_options = {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    };
-
-    fetch(
-      "https://www.googleapis.com/calendar/v3/users/me/calendarList",
-      fetch_options
-    )
-      .then((response) => response.json()) // Transform the data into json
-      .then(function (data) {
-        console.log(data.items[0].id); //contains the response of the created event
-        let calendarId = data.items[0].id;
-        listEvents(calendarId);
+  chrome.storage.sync.get("googleToken", ({ googleToken }) => {
+    console.log(googleToken);
+    if (googleToken) {
+      $("#google-card").hide();
+      fetchEvents(googleToken);
+      
+    } else {
+      chrome.identity.getAuthToken({ interactive: true }, function (token) {
+        console.log(token);
+        chrome.storage.sync.set({ googleToken: token });
+        fetchEvents(token);
       });
+    }
   });
+}
+
+function fetchEvents(token) {
+  let fetch_options = {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  fetch(
+    "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+    fetch_options
+  )
+    .then((response) => response.json()) // Transform the data into json
+    .then(function (data) {
+      console.log(data.items[0].id); //contains the response of the created event
+      let calendarId = data.items[0].id;
+      listEvents(calendarId, token);
+    });
 }
 function ISODateString(d) {
   function pad(n) {
@@ -139,9 +152,8 @@ function AmPm(num) {
   return "pm " + padNum(num - 12);
 }
 
-function listEvents(calendarId) {
-  chrome.identity.getAuthToken({ interactive: true }, function (token) {
-    console.log(token);
+function listEvents(calendarId, token) {
+  
 
     let fetch_options = {
       method: "GET",
@@ -244,7 +256,7 @@ function listEvents(calendarId) {
           document.getElementById("events").appendChild(li);
         }
       });
-  });
+
 }
 
 function fetchGitlabData(gitLabPersonalToken) {
@@ -253,7 +265,7 @@ function fetchGitlabData(gitLabPersonalToken) {
     method: "GET",
     headers: {
       "PRIVATE-TOKEN": gitLabPersonalToken,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
   };
   fetch(
@@ -277,7 +289,6 @@ function fetchGitlabData(gitLabPersonalToken) {
       // sync chrome storage
       chrome.storage.sync.set({ gitlab_token: gitLabPersonalToken });
       if (data) {
-        chrome.storage.sync.set({ github_token: githubPersonalToken });
       }
     })
     .catch((error) => {
@@ -330,7 +341,6 @@ function fetchGithubData(githubPersonalToken) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const githubPersonalToken = "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";
   let currentDate = new Date();
 
   let twoWeeksAgoDate = new Date(
@@ -343,15 +353,16 @@ document.addEventListener("DOMContentLoaded", function () {
   chrome.storage.sync.get("github_token", ({ github_token }) => {
     console.log("github token from storage: ", github_token);
   });
-  // getCalendarId();
+
+  getCalendarId();
 });
 
 // Get Github submit input and button
 let gitHubInput = document.getElementById("github-input");
 let gitHubSubmit = document.getElementById("github-submit");
 
-gitHubSubmit.addEventListener("click", function(){
-  gitHubToken = gitHubInput.value
+gitHubSubmit.addEventListener("click", function () {
+  gitHubToken = gitHubInput.value;
   console.log("submit github token: ", gitHubToken);
   fetchGithubData(gitHubToken);
 });
@@ -359,9 +370,9 @@ gitHubSubmit.addEventListener("click", function(){
 // Get Gitlab submit input and button
 let gitLabInput = document.getElementById("gitlab-input");
 let gitLabSubmit = document.getElementById("gitlab-submit");
- 
-gitLabSubmit.addEventListener("click", function(){
-  gitLabToken = gitLabInput.value
+
+gitLabSubmit.addEventListener("click", function () {
+  gitLabToken = gitLabInput.value;
   console.log("submit gitlab token: ", gitLabToken);
   fetchGitlabData(gitLabToken);
 });

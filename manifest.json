@@ -14,10 +14,7 @@
     "identity.email"
   ],
   "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "128": "/images/get_started128.png"
-    }
+    "default_popup": "popup.html"
   },
   "oauth2": {
     "client_id": "155844829382-m0k2t7gtspe939u700qrd0568b982nka.apps.googleusercontent.com",
@@ -31,9 +28,9 @@
     "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline'"
   },
   "icons": {
-    "16": "/images/espace16.png",
-    "32": "/images/espace32.png",
-    "48": "/images/espace48.png",
-    "128": "/images/espace128.png"
-  }
+    "16": "/images/icon-16_x_16.png",
+    "32": "/images/icon-32_x_32.png",
+    "48": "/images/icon-48_x_48.png",
+    "128": "/images/icon-128_x_128.png"
+}
 }
