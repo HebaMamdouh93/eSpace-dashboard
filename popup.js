@@ -208,7 +208,7 @@ function removeByClassName(class_name) {
 function appendNotifications(title, url, class_name="test"){
   $("table").removeClass("d-none");
   let  body = `<tr class=${class_name}>
-              <td><a href=${url}><h3>${title}</h3></td>
+              <td><a href=${url}>${title}</a></td>
               </tr>`;
   $("#notifications").append(body)
 }

@@ -62,10 +62,11 @@ table{
 td{
   margin: auto;
   width: 50%;
-  padding: 10px;
+  /* padding: 10px; */
 }
 tr{
-  height: 20px;
+  height: 35px;
+  /* border-radius: 30%; */
 }
 
 .buttons{
@@ -81,13 +82,20 @@ tr{
   color: white;
 }
 .gitlab{
-  background-color: #f0a126;
+  background-color: #f0a12691;
 }
 .github{
-  background-color: #24292f;
+  background-color: #24292f4f;
 }
 .google{
-  background-color: #e44f36;
+  background-color: #e4c0366b;
+}
+
+.gitlab-input-box{
+  background-color: #f0a126;
+}
+.github-input-box{
+  background-color: #24292f
 }
 .inputs{
   display: block;
